@@ -1,0 +1,30 @@
+{
+  "name": "paper-scissors-rock-slackbot",
+  "version": "0.0.1",
+  "description": "Slack bot for playing paper scissors rock between users on Slack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jniechcial/paper-scissors-rock-slackbot.git"
+  },
+  "engines": {
+    "node": "4.2.2"
+  },
+  "author": "Kuba Niechcial",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jniechcial/paper-scissors-rock-slackbot/issues"
+  },
+  "homepage": "https://github.com/jniechcial/paper-scissors-rock-slackbot#readme",
+  "dependencies": {
+    "slack-client": "^2.0.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-env": "^0.4.0",
+    "gulp-nodemon": "^2.0.6"
+  }
+}
