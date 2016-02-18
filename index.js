@@ -12,6 +12,10 @@ const web = new WebClient(token);
 require('./config/mongo-db')();
 // Start Slack RTM
 rtm.start();
+
+// Setup users hash
+require('./src/initializers/users-hash-initializer')(web);
+
 rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
   rtm.on(RTM_EVENTS.MESSAGE, (message) => {
   });
