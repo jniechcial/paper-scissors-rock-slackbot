@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/jniechcial/paper-scissors-rock-slackbot#readme",
   "dependencies": {
+    "mongoose": "^4.4.3",
     "slack-client": "^2.0.2"
   },
   "devDependencies": {

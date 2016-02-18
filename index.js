@@ -7,6 +7,9 @@ const RTM_CLIENT_EVENTS = require('slack-client').CLIENT_EVENTS.RTM;
 const token = process.env.SLACK_API_TOKEN || '';
 const rtm = new RtmClient(token);
 const web = new WebClient(token);
+
+// Database setup
+require('./config/mongo-db')();
 // Start Slack RTM
 rtm.start();
 rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
