@@ -10,6 +10,10 @@ const web = new WebClient(token);
 
 // Database setup
 require('./config/mongo-db')();
+
+// Slack bot engine
+const slackBot = require('./src/slackbot/engine')(rtm, web);
+
 // Start Slack RTM
 rtm.start();
 
@@ -18,5 +22,12 @@ require('./src/initializers/users-hash-initializer')(web);
 
 rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
   rtm.on(RTM_EVENTS.MESSAGE, (message) => {
+    if (!message.text) return;
+
+    if(message.channel.match(/^D/)) {
+      slackBot.privateMessageToSlackbot(message);
+    } else if (slackBot.channelMessageToSlackbot(message)) {
+      slackBot.startGame(message);
+    }
   });
 });

@@ -22,6 +22,7 @@
   "dependencies": {
     "hashmap": "^2.0.4",
     "mongoose": "^4.4.3",
+    "promise": "^7.1.1",
     "slack-client": "^2.0.2"
   },
   "devDependencies": {
