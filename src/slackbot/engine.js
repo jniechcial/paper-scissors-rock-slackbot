@@ -34,30 +34,40 @@ module.exports = function(slackClient, slackWebClient) {
 
       const game = new Game({ playerIds: users, channelId: message.channel });
       game.save(() => {
-        messanger.respondWith(message, `Starting game ${game._id}...`);
+        messanger.notifyAboutStartGame(message, game);
       });
     },
 
     _acceptResponse(message) {
       this._extractPossibleGameObject(message).then((game) => {
-        if (responseValidator(message)) return this._createResponse(message, game);
+        if (responseValidator(message, game, messanger)) return this._createResponse(message, game);
       }).then((game) => {
         this._checkGameStatus(game);
       }).catch((err) => {
-        if (err !== 'Flow escape') console.log('error');
+        if (err !== 'Flow escape') console.log(err);
       });
     },
 
     _extractPossibleGameObject(message) {
-      const gameId = message.text.split(' ')[0];
+      var gameId = message.text.split(' ')[0];
+      if (gameId.match(/\*[a-zA-Z0-9]*\*/)) {
+        gameId = gameId.slice(1, gameId.length - 1);
+      }
 
       return new Promise((resolve, reject) => {
         Game.findOne({ '_id': gameId }, (error, game) => {
           if (game) {
             resolve(game);
           } else {
-            messanger.respondWith(message, 'No such game in database :(');
-            reject();
+            Game.find({ playerIds: message.user })
+              .sort({ createdAt: -1 })
+              .limit(1).lean().exec((err, results) => {
+                messanger.respondWith(message, '> No such game in database :crying_cat_face:');
+                if (results.length) {
+                  messanger.respondWith(message, `> Maybe a typo? Your last game was *${results[0]._id}*`);
+                }
+              });
+            reject('Flow escape');
           }
         });
       });
@@ -67,8 +77,8 @@ module.exports = function(slackClient, slackWebClient) {
       return new Promise((resolve, reject) => {
         GameResponse.findOne({ 'gameId': game._id, 'userId': message.user }, (error, gameResponse) => {
           if (gameResponse) {
-            messanger.respondWith(message, 'You already responded to this game!');
-            reject();
+            messanger.respondWith(message, '> You already responded to this game! :troll:');
+            reject('Flow escape');
           } else {
             resolve();
           }
@@ -81,7 +91,7 @@ module.exports = function(slackClient, slackWebClient) {
             response: message.text.split(' ')[1],
           });
           gameResponseObject.save(() => {
-            messanger.respondWith(message, 'Acknowledgement!');
+            messanger.respondWith(message, '> *Acknowledgement!* Wish you luck! :ok_hand:');
             resolve(game);
           });
         });
@@ -100,6 +110,7 @@ module.exports = function(slackClient, slackWebClient) {
         } else {
           messanger.notifyAboutWinners(game, gameRules.giveWinners(gameCounter, results));
         }
+        messanger.notifyAboutResponses(game, results);
       });
     },
   };
