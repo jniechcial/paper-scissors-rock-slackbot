@@ -14,8 +14,10 @@ module.exports = function(message, game, messanger) {
       }
     }
 
-    messanger.respondWith(message, '> I don\'t understand your response to that game! :crying_cat_face:');
-    messanger.respondWith(message, `> [_Hint_] Write me: *${game._id}* ${optionsString}`);
+    messanger.respondWith([
+      { content: 'I don\'t understand your response to that game! :crying_cat_face:', color: 'danger' },
+      { content: `[_Hint_] Write me: *${game._id}* ${optionsString}`, color: 'warning' }
+    ], message.channel);
     return false;
   }
 }

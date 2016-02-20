@@ -4,11 +4,11 @@ module.exports = function(message, messanger) {
   const messageArray = message.text.split(' ');
   const challengePresent = messageArray[1] === 'challenge';
   if (!challengePresent) {
-    messanger.respondWith(message, `> *Usage*: <@${process.env.SLACK_BOT_NAME}> challenge @user1 @user2 and so on..`);
+    messanger.respondWith([{ content: `*Usage*: <@${process.env.SLACK_BOT_NAME}> challenge @user1 @user2 and so on..`, color: 'good' }], message.channel);
     return [];
   }
   if (messageArray.length < 3) {
-    messanger.respondWith(message, `> Hey, you cannot play alone! *Challenge someone!* :gun:`);
+    messanger.respondWith([{ content: `Hey, you cannot play alone! *Challenge someone!* :gun:`, color: 'warning' }], message.channel);
     return [];
   }
 
@@ -20,7 +20,7 @@ module.exports = function(message, messanger) {
 
     const tempUser = usersHash.get(user);
     if (!tempUser) {
-      messanger.respondWith(message, `> Sorry, I don't recognize *${user}* - typo? :crying_cat_face:`);
+      messanger.respondWith([{ content: `Sorry, I don't recognize *${user}* - typo? :crying_cat_face:`, color: 'danger' }], message.channel);
       usersValid = false;
     }
     return tempUser;
@@ -29,7 +29,7 @@ module.exports = function(message, messanger) {
   if (users.indexOf(message.user) < 0) {
     users.push(message.user);
   } else if (users.length === 1) {
-    messanger.respondWith(message, `> Hey, you cannot play alone! *Challenge someone!* :gun:`);
+    messanger.respondWith([{ content: `Hey, you cannot play alone! *Challenge someone!* :gun:`, color: 'warning' }], message.channel);
     return [];
   }
 

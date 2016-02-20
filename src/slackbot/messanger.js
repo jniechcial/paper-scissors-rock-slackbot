@@ -1,7 +1,28 @@
 const possibleResponses = require('../../config/options');
 
-module.exports = function(_slackClient) {
+module.exports = function(_slackClient, _webClient) {
   const slackClient = _slackClient;
+  const webClient = _webClient;
+
+  const client = {
+    sendPlainMessage(content, channel) {
+      slackClient.sendMessage(content, channel);
+    },
+    sendColoredMessage(contentArray, channel) {
+      const attachments = contentArray.map((item) => {
+        return {
+          fallback: item.content,
+          color: item.color,
+          text: item.content,
+          mrkdwn_in: ['text'],
+        };
+      });
+      webClient.chat.postMessage(channel, '', {
+        as_user: true,
+        attachments: JSON.stringify(attachments)
+      });
+    },
+  }
 
   return {
     notifyAboutWinners(game, winners) {
@@ -9,11 +30,11 @@ module.exports = function(_slackClient) {
       winners.forEach((winner) => {
         winnersString += `<@${winner.userId}>`;
       })
-      slackClient.sendMessage(`> Game *${game._id}* finished with winners: ${winnersString} :dancers: :confetti_ball:`, game.channelId);
+      client.sendColoredMessage([{ content: `Game *${game._id}* finished with winners: ${winnersString} :dancers: :confetti_ball:`, color: 'good' }], game.channelId);
     },
 
     notifyAboutDraw(game) {
-      slackClient.sendMessage(`> Game *${game._id}* finished with *draw* :peace_symbol:`, game.channelId);
+      client.sendColoredMessage([{ content: `Game *${game._id}* finished with *draw* :peace_symbol:`, color: 'good' }], game.channelId);
     },
 
     notifyAboutStartGame(message, game) {
@@ -36,25 +57,30 @@ module.exports = function(_slackClient) {
         }
       }
 
-      slackClient.sendMessage(`> Starting game *${game._id}* between ${playersString}. *Fight!* :white_square: :scissors: :melon:`, message.channel);
-      slackClient.sendMessage(`> [_Hint_] Respond DM to me with: *${game._id}* ${optionsString}`, message.channel);
+      client.sendColoredMessage([
+        { content: `Starting game *${game._id}* between ${playersString}. *Fight!* :white_square: :scissors: :melon:`, color: 'good' },
+        { content: `[_Hint_] Respond DM to me with: *${game._id}* ${optionsString}`, color: 'good' }
+      ], message.channel);
     },
 
     notifyAboutResponses(game, responses) {
       var message = '';
       responses.forEach((response) => {
-        message += `> <@${response.userId}> responded with *${response.response}*\n`;
+        message += `<@${response.userId}> responded with *${response.response}*\n`;
       });
-      message += `> Wanna fight again? :chicken: Type: <@${process.env.SLACK_BOT_NAME}> again`;
-      slackClient.sendMessage(message, game.channelId);
+      const content = [
+        { content: message, color: 'good' },
+        { content: `Wanna fight again in the same team? :chicken: Type: <@${process.env.SLACK_BOT_NAME}> again`, color: 'good' },
+      ];
+      client.sendColoredMessage(content, game.channelId);
     },
 
     notifyAboutResponse(game, response) {
-      slackClient.sendMessage(`> Game *${game._id}* status: <@${response.userId}> responded! :boom: :boom: :boom:`, game.channelId);
+      client.sendColoredMessage([{ content: `Game *${game._id}* status: <@${response.userId}> responded! :boom: :boom: :boom:`, color: 'good' }], game.channelId);
     },
 
-    respondWith(message, content) {
-      slackClient.sendMessage(content, message.channel);
+    respondWith(content, channel) {
+      client.sendColoredMessage(content, channel);
     },
   };
 };

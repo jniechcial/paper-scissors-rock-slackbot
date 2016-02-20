@@ -9,7 +9,7 @@ const GameResponse = require('../models/game-response');
 
 module.exports = function(slackClient, slackWebClient) {
   const dataHelpers = require('../data/helpers')(slackWebClient);
-  const messanger = require('./messanger')(slackClient);
+  const messanger = require('./messanger')(slackClient, slackWebClient);
   const startGameValidator = require('../validators/start-game');
   const restartGameValidator = require('../validators/restart-game');
   const responseValidator = require('../validators/response');
@@ -67,10 +67,12 @@ module.exports = function(slackClient, slackWebClient) {
             Game.find({ playerIds: message.user })
               .sort({ createdAt: -1 })
               .limit(1).lean().exec((err, results) => {
-                messanger.respondWith(message, '> No such game in database :crying_cat_face:');
+                const response = [];
+                response.push({ content: 'No such game in database :crying_cat_face:', color: 'danger' });
                 if (results.length) {
-                  messanger.respondWith(message, `> Maybe a typo? Your last game was *${results[0]._id}*`);
+                  response.push({ content: `Maybe a typo? Your last game was *${results[0]._id}*`, color: 'warning' });
                 }
+                messanger.respondWith(response, message.channel);
               });
             reject('Flow escape');
           }
@@ -82,7 +84,7 @@ module.exports = function(slackClient, slackWebClient) {
       return new Promise((resolve, reject) => {
         GameResponse.findOne({ 'gameId': game._id, 'userId': message.user }, (error, gameResponse) => {
           if (gameResponse) {
-            messanger.respondWith(message, '> You already responded to this game! :troll:');
+            messanger.respondWith([{ content: 'You already responded to this game! :troll:', color: 'danger' }], message.channel);
             reject('Flow escape');
           } else {
             resolve();
@@ -96,7 +98,7 @@ module.exports = function(slackClient, slackWebClient) {
             response: message.text.split(' ')[1],
           });
           gameResponseObject.save(() => {
-            messanger.respondWith(message, '> *Acknowledgement!* Wish you luck! :ok_hand:');
+            messanger.respondWith([{ content: '*Acknowledgement!* Wish you luck! :ok_hand:', color: 'good' }], message.channel);
             messanger.notifyAboutResponse(game, gameResponseObject);
             resolve(game);
           });
@@ -116,7 +118,9 @@ module.exports = function(slackClient, slackWebClient) {
         } else {
           messanger.notifyAboutWinners(game, gameRules.giveWinners(gameCounter, results));
         }
-        messanger.notifyAboutResponses(game, results);
+        setTimeout(() => {
+          messanger.notifyAboutResponses(game, results);
+        }, 500);
       });
     },
 
@@ -134,7 +138,7 @@ module.exports = function(slackClient, slackWebClient) {
               messanger.notifyAboutStartGame(message, game);
             });
           } else {
-            messanger.respondWith(message, `> Holy moly, you have not played yet! :rocket:`);
+            messanger.respondWith([{ content: `Holy moly, you have not played yet! :rocket:`, color: 'warning' }], message.channel);
           }
         });
     },
