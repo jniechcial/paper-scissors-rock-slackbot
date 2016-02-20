@@ -11,6 +11,7 @@ module.exports = function(slackClient, slackWebClient) {
   const dataHelpers = require('../data/helpers')(slackWebClient);
   const messanger = require('./messanger')(slackClient);
   const startGameValidator = require('../validators/start-game');
+  const restartGameValidator = require('../validators/restart-game');
   const responseValidator = require('../validators/response');
   const gameRules = require('./game-rules');
 
@@ -29,6 +30,10 @@ module.exports = function(slackClient, slackWebClient) {
     },
 
     startGame(message) {
+      if (restartGameValidator(message, messanger)) {
+        return this._restartGame(message);
+      }
+
       const users = startGameValidator(message, messanger);
       if (!users.length) return;
 
@@ -113,6 +118,25 @@ module.exports = function(slackClient, slackWebClient) {
         }
         messanger.notifyAboutResponses(game, results);
       });
+    },
+
+    _restartGame(message) {
+      Game.find({ playerIds: message.user })
+        .sort({ createdAt: -1 })
+        .limit(1).lean().exec((err, results) => {
+          if (results.length) {
+            const game = new Game({
+              playerIds: results[0].playerIds,
+              channelId: results[0].channelId
+            });
+
+            game.save(() => {
+              messanger.notifyAboutStartGame(message, game);
+            });
+          } else {
+            messanger.respondWith(message, `> Holy moly, you have not played yet! :rocket:`);
+          }
+        });
     },
   };
 };

@@ -45,7 +45,7 @@ module.exports = function(_slackClient) {
       responses.forEach((response) => {
         message += `> <@${response.userId}> responded with *${response.response}*\n`;
       });
-      message += '> Wanna fight again? :chicken:';
+      message += `> Wanna fight again? :chicken: Type: <@${process.env.SLACK_BOT_NAME}> again`;
       slackClient.sendMessage(message, game.channelId);
     },
 
