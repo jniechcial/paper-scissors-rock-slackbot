@@ -18,9 +18,11 @@ module.exports = function(slackClient, slackWebClient) {
   return {
     channelMessageToSlackbot(message) {
       const firstWord = message.text.split(' ')[0];
+      const slackBotId = slackClient.activeUserId;
+      console.log(slackBotId);
       return (firstWord === process.env.SLACK_BOT_NAME) ||
-        (firstWord === `<@${process.env.SLACK_BOT_SLACK_ID}>:`) ||
-        (firstWord === `<@${process.env.SLACK_BOT_SLACK_ID}>`);
+        (firstWord === `<@${slackBotId}>:`) ||
+        (firstWord === `<@${slackBotId}>`);
     },
 
     privateMessageToSlackbot(message) {
