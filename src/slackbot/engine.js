@@ -92,6 +92,7 @@ module.exports = function(slackClient, slackWebClient) {
           });
           gameResponseObject.save(() => {
             messanger.respondWith(message, '> *Acknowledgement!* Wish you luck! :ok_hand:');
+            messanger.notifyAboutResponse(game, gameResponseObject);
             resolve(game);
           });
         });

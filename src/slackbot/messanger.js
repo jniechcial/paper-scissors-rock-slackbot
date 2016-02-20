@@ -49,6 +49,10 @@ module.exports = function(_slackClient) {
       slackClient.sendMessage(message, game.channelId);
     },
 
+    notifyAboutResponse(game, response) {
+      slackClient.sendMessage(`> Game *${game._id}* status: <@${response.userId}> responded! :boom: :boom: :boom:`, game.channelId);
+    },
+
     respondWith(message, content) {
       slackClient.sendMessage(content, message.channel);
     },
