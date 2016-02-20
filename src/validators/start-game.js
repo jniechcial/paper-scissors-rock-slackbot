@@ -25,7 +25,13 @@ module.exports = function(message, messanger) {
     }
     return tempUser;
   });
-  users.push(message.user);
+
+  if (users.indexOf(message.user) < 0) {
+    users.push(message.user);
+  } else if (users.length === 1) {
+    messanger.respondWith(message, `> Hey, you cannot play alone! *Challenge someone!* :gun:`);
+    return [];
+  }
 
   if (!usersValid) {
     return [];;
