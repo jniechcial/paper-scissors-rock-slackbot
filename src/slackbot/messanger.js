@@ -28,7 +28,7 @@ module.exports = function(_slackClient, _webClient) {
     notifyAboutWinners(game, winners) {
       var winnersString = '';
       winners.forEach((winner) => {
-        winnersString += `<@${winner.userId}>`;
+        winnersString += `<@${winner.userId}> `;
       })
       client.sendColoredMessage([{ content: `Game *${game._id}* finished with winners: ${winnersString} :dancers: :confetti_ball:`, color: 'good' }], game.channelId);
     },
