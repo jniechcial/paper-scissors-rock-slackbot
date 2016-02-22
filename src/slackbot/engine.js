@@ -19,7 +19,6 @@ module.exports = function(slackClient, slackWebClient) {
     channelMessageToSlackbot(message) {
       const firstWord = message.text.split(' ')[0];
       const slackBotId = slackClient.activeUserId;
-      console.log(slackBotId);
       return (firstWord === process.env.SLACK_BOT_NAME) ||
         (firstWord === `<@${slackBotId}>:`) ||
         (firstWord === `<@${slackBotId}>`);
@@ -36,7 +35,7 @@ module.exports = function(slackClient, slackWebClient) {
         return this._restartGame(message);
       }
 
-      const users = startGameValidator(message, messanger);
+      const users = startGameValidator(message, messanger, slackClient.activeUserId);
       if (!users.length) return;
 
       const game = new Game({ playerIds: users, channelId: message.channel });
@@ -64,7 +63,13 @@ module.exports = function(slackClient, slackWebClient) {
       return new Promise((resolve, reject) => {
         Game.findOne({ '_id': gameId }, (error, game) => {
           if (game) {
-            resolve(game);
+            if (game.playerIds.indexOf(message.user) > -1) {
+              resolve(game);
+            } else {
+              const response = [{ content: 'It\'s not your game, you :troll:', color: 'danger' }];
+              messanger.respondWith(response, message.channel);
+              reject('Flow escape');
+            }
           } else {
             Game.find({ playerIds: message.user })
               .sort({ createdAt: -1 })
