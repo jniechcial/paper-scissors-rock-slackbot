@@ -1,14 +1,12 @@
-module.exports = function(message, messanger) {
+const _ = require('underscore');
+
+module.exports = function(message, messanger, currentId) {
   const usersHash = require('../data/users-hash').users;
 
   const messageArray = message.text.split(' ');
   const challengePresent = messageArray[1] === 'challenge';
   if (!challengePresent) {
     messanger.respondWith([{ content: `*Usage*: <@${process.env.SLACK_BOT_NAME}> challenge @user1 @user2 and so on..`, color: 'good' }], message.channel);
-    return [];
-  }
-  if (messageArray.length < 3) {
-    messanger.respondWith([{ content: `Hey, you cannot play alone! *Challenge someone!* :gun:`, color: 'warning' }], message.channel);
     return [];
   }
 
@@ -26,16 +24,20 @@ module.exports = function(message, messanger) {
     return tempUser;
   });
 
-  if (users.indexOf(message.user) < 0) {
-    users.push(message.user);
-  } else if (users.length === 1) {
+  const filteredUsers = _.uniq(users.filter((user) => {
+    return user !== currentId;
+  }));
+
+  if (filteredUsers.indexOf(message.user) < 0) {
+    filteredUsers.push(message.user);
+  } else if (filteredUsers.length === 1) {
     messanger.respondWith([{ content: `Hey, you cannot play alone! *Challenge someone!* :gun:`, color: 'warning' }], message.channel);
     return [];
   }
 
   if (!usersValid) {
-    return [];;
+    return [];
   }
 
-  return users;
+  return filteredUsers;
 }
