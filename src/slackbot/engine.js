@@ -30,11 +30,25 @@ module.exports = function(slackClient, slackWebClient) {
       });
     },
 
-    startGame(message) {
-      if (restartGameValidator(message, messanger)) {
-        return this._restartGame(message);
-      }
+    acceptCommand(message) {
+      const messageArray = message.text.split(' ');
+      const challengePresent = messageArray[1] === 'challenge';
+      const statsQuery = messageArray[1] === 'stats';
 
+      if (challengePresent) {
+        this.startGame(message);
+      } else if (statsQuery) {
+      } else if (restartGameValidator(message, messanger)) {
+        return this._restartGame(message);
+      } else {
+        messanger.respondWith([
+          { content: `*Usage*: <@${process.env.SLACK_BOT_NAME}> challenge @user1 @user2 and so on..`, color: 'good' },
+          { content: `*User Stats*: <@${process.env.SLACK_BOT_NAME}> stats`, color: 'good' }
+        ], message.channel);
+      }
+    },
+
+    startGame(message) {
       const users = startGameValidator(message, messanger, slackClient.activeUserId);
       if (!users.length) return;
 

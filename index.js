@@ -29,7 +29,7 @@ rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
     if(message.channel.match(/^D/)) {
       slackBot.privateMessageToSlackbot(message);
     } else if (slackBot.channelMessageToSlackbot(message)) {
-      slackBot.startGame(message);
+      slackBot.acceptCommand(message);
     }
   });
 });
