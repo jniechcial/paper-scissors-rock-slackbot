@@ -1,6 +1,6 @@
 {
   "name": "paper-scissors-rock-slackbot",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Slack bot for playing paper scissors rock between users on Slack",
   "main": "index.js",
   "scripts": {
