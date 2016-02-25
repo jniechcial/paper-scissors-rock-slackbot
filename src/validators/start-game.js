@@ -4,11 +4,6 @@ module.exports = function(message, messanger, currentId) {
   const usersHash = require('../data/users-hash').users;
 
   const messageArray = message.text.split(' ');
-  const challengePresent = messageArray[1] === 'challenge';
-  if (!challengePresent) {
-    messanger.respondWith([{ content: `*Usage*: <@${process.env.SLACK_BOT_NAME}> challenge @user1 @user2 and so on..`, color: 'good' }], message.channel);
-    return [];
-  }
 
   var usersValid = true;
   const users = messageArray.splice(2, messageArray.length).map((user) => {
