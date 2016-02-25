@@ -14,7 +14,7 @@ Game.find({}).lean().exec((err, results) => {
       if (game.playerIds.length !== results.length) return;
 
       const gameCounter = gameRules.processToGameCounter(results);
-      const drawByAll = gameRules.dhrawByAllPossibilites(gameCounter);
+      const drawByAll = gameRules.drawByAllPossibilites(gameCounter);
       const drawByOne = gameRules.drawByOnlyOnePossibility(gameCounter);
       if (!drawByAll && !drawByOne) {
         const winners = gameRules.giveWinners(gameCounter, results).map(winner => winner.userId);
