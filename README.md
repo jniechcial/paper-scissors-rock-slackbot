@@ -28,6 +28,9 @@ After everyone responds, bot will give you the results!
 * After finished game, draw or not, you can simply say *again* to challange same competitors!
 ![Say Again](https://s3.eu-central-1.amazonaws.com/github-readmes/say-again.png)
 
+* Type `@botname stats` to see three players with the biggest won count.
+![Say stats](https://s3.eu-central-1.amazonaws.com/github-readmes/say-stats.png)
+
 # Deployment
 1. Fork the repository.
 2. Run `cp .env.sample.ini .env.ini`.
