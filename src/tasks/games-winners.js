@@ -18,7 +18,10 @@ Game.find({}).lean().exec((err, results) => {
       const drawByOne = gameRules.drawByOnlyOnePossibility(gameCounter);
       if (!drawByAll && !drawByOne) {
         const winners = gameRules.giveWinners(gameCounter, results).map(winner => winner.userId);
-        Game.update({ _id: game._id }, { winners });
+        Game.update({ _id: game._id }, { winners }, (err, res) => {
+          if (err) console.log(err);
+          console.log(res);
+        });
       }
     });
   })
