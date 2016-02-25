@@ -137,7 +137,9 @@ module.exports = function(slackClient, slackWebClient) {
         } else if (gameRules.drawByOnlyOnePossibility(gameCounter)) {
           messanger.notifyAboutDraw(game);
         } else {
-          messanger.notifyAboutWinners(game, gameRules.giveWinners(gameCounter, results));
+          const winners = gameRules.giveWinners(gameCounter, results);
+          gameRules.updateWinners(game, winners)
+          messanger.notifyAboutWinners(game, winners);
         }
         setTimeout(() => {
           messanger.notifyAboutResponses(game, results);

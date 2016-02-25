@@ -43,5 +43,11 @@ module.exports = {
     });
 
     return gameCounter;
-  }
+  },
+
+  updateWinners(winners) {
+    Game.update({ _id: game._id }, { winners: winners.map(winner => winner.userId) }, (err) => {
+      if (err) console.log(err);
+    });
+  },
 };
