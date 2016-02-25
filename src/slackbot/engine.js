@@ -43,7 +43,7 @@ module.exports = function(slackClient, slackWebClient) {
           const content = stats.map((stat, index) => {
             const name = slackClient.dataStore.getUserById(stat.userId).name;
             return {
-              content: `*${index}) ${name}* won: *${stat.won} / ${stat.played}* (Rate ${Math.round(stat.rank*100)}%)`,
+              content: `*${index + 1}) ${name}* won: *${stat.won} / ${stat.played}* (Rate ${Math.round(stat.rank*100)}%)`,
               color: 'good',
             };
           });
