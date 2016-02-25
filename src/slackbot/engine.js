@@ -14,6 +14,7 @@ module.exports = function(slackClient, slackWebClient) {
   const restartGameValidator = require('../validators/restart-game');
   const responseValidator = require('../validators/response');
   const gameRules = require('./game-rules');
+  const statsCalculator = require('./stats-calculator');
 
   return {
     channelMessageToSlackbot(message) {
@@ -38,6 +39,16 @@ module.exports = function(slackClient, slackWebClient) {
       if (challengePresent) {
         this.startGame(message);
       } else if (statsQuery) {
+        statsCalculator().then((stats) => {
+          const content = stats.map((stat, index) => {
+            const name = slackClient.dataStore.getUserById(stat.userId).name;
+            return {
+              content: `*${index}) ${name}* won: *${stat.won} / ${stat.played}* (Rate ${Math.round(stat.rank*100)}%)`,
+              color: 'good',
+            };
+          });
+          messanger.respondWith(content, message.channel);
+        });
       } else if (restartGameValidator(message, messanger)) {
         return this._restartGame(message);
       } else {
